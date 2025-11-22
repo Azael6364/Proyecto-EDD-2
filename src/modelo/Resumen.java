@@ -51,19 +51,19 @@ public class Resumen {
         return palabrasClaves;
     }
 
-   // --- MÉTODOS DE AYUDA ---
+   //MÉTODOS 
 
     /**
      * @return Un String con todos los autores separados por coma.
      */
     public String autoresToString() {
         if (autores == null) return "";
-        // Unimos el arreglo en un solo String
+        // Unir el arreglo en un solo String
         return String.join(", ", autores);
     }
 
     /**
-     * Método para ver la info en consola.
+     * Metodo para ver la info en consola.
      */
     @Override
     public String toString() {
