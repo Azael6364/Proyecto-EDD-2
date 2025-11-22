@@ -5,10 +5,12 @@
 package supermetromendeley;
 
 /**
- * Implementación de la tabla de dispersión con direccionamiento abierto.
- * @param <K> Tipo de clave
- * @param <V> Tipo de valor
+ * Tabla de dispersión para almacenar resúmenes científicos.
+ * Clave: título de la investigaciòn (String).
+ * Valor: objeto Resumen.
  * @author NITRO
+ * @param <K>
+ * @param <V>
  */
 public class HashTable<K, V> {
     private static final double FACTOR_CARGA_MAXIMO = 0.65;
@@ -44,7 +46,7 @@ public class HashTable<K, V> {
         String s = clave.toString();
         int h = 0;
         for (int i = 0; i < s.length(); i++) {
-            h = 31 * h + s.charAt(i);
+            h = 31 * h + s.charAt(i); // mezcla multiplicativa y XOR
         }
         return Math.abs(h) % tabla.length;
     }
@@ -74,7 +76,7 @@ public class HashTable<K, V> {
             if (e.borrado && primerBorrado == -1) {
                 primerBorrado = idx;
             } else if (!e.borrado && e.clave.equals(clave)) {
-                e.valor = valor;
+                e.valor = valor; // actualización
                 return;
             }
             idx = (idx + 1) % tabla.length;
