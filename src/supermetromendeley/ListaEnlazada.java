@@ -17,8 +17,13 @@ public class ListaEnlazada<T> implements Iterable<T> {
     
     /** Nodo inicial de la lista. */
     private Nodo<T> head;
+    /** Número de elementos almacenados en la lista. */
     private int size;
     
+    /**
+     * Constructor que inicializa una lista vacía.
+     * La cabeza se establece en null y el tamaño en cero.
+     */
     public ListaEnlazada(){
         head = null;
         size = 0;
@@ -113,6 +118,13 @@ public class ListaEnlazada<T> implements Iterable<T> {
         return size == 0;
     }
     
+    /**
+     * Verifica que el índice proporcionado esté dentro de los límites válidos de la lista.
+     * Si el índice es negativo o mayor o igual al tamaño actual de la lista, lanza una excepción.
+     * 
+     * @param indice el índice que se desea validar
+     * @throws IndexOutOfBoundsException si el índice está fuera del rango permitido
+     */
     private void validarIndice(int indice) {
         if (indice < 0 || indice >= size) {
             throw new IndexOutOfBoundsException("Índice fuera de rango: " + indice);
@@ -127,13 +139,25 @@ public class ListaEnlazada<T> implements Iterable<T> {
     @Override
     public Iterator<T> iterator() {
         return new Iterator<T>() {
+            /** Nodo actual en el recorrido. */
             private Nodo<T> actual = head;
             
+            /**
+             * Verifica si hay más elementos por recorrer en la lista.
+             * 
+             * @return true si existe un siguiente elemento, false si no ha llegado al final
+             */
             @Override
             public boolean hasNext() {
                 return actual != null;
             }
             
+            /**
+             * Devuelve el siguiente elemento en el recorrido y avanza el puntero.
+             * 
+             * @return el siguiente elemento de tipo T
+             * @throws NoSuchElementException si no hay más elementos disponibles
+             */
             @Override
             public T next() {
                 if (!hasNext()) throw new NoSuchElementException();

@@ -12,17 +12,30 @@ import java.util.*;
  */
 public class ArbolAVL<T extends Comparable<T>> {
     
+    /** Nodo raíz del árbol AVL. */
     private NodoAVL<T> raiz;
     
     /**
      * Nodo interno del árbol AVL.
+     * Contiene una clave, un conjunto de títulos asociados, referencias a hijos izquierdo y derecho,
+     * y la altura del nodo para mantener el balance del árbol.
+     * 
+     * @param <T> tipo de clave almacenada en el nodo (debe ser comparable)
      */
     private static class NodoAVL<T> {
-        T clave;
-        Set<String> titulos; // índice de investigaciones asociadas
-        NodoAVL<T> izquierdo, derecho;
-        int altura;
+        
+        T clave; // Clave del nodo (por ejemplo, autor o palabra clave).
+        Set<String> titulos; // índice de investigaciones asociadas.
+        NodoAVL<T> izquierdo, derecho; // Referencia al hijo izquierdo y derecho del nodo.
+        int altura; // Altura del nodo dentro del árbol AVL.
 
+        /**
+         * Constructor que inicializa un nodo con una clave y un título asociado.
+         * Se crea un conjunto de títulos y se establece la altura inicial en 1.
+         * 
+         * @param clave la clave que se desea indexear
+         * @param titulo el título de investigación asociado a la clave
+         */
         NodoAVL(T clave, String titulo) {
             this.clave = clave;
             this.titulos = new LinkedHashSet<>();
@@ -52,6 +65,14 @@ public class ArbolAVL<T extends Comparable<T>> {
         return nodo == null ? Collections.emptySet() : nodo.titulos;
     }
     
+    /**
+     * Busca de forma recursiva un nodo que contenga la clave especificada dentro del árbol AVL.
+     * Compara la clave buscada con la clave del nodo actual y decide si continúa por el subárbol izquierdo o derecho.
+     * 
+     * @param nodo el nodo desde el cual comienza la búsqueda (puede ser la raíz o un subárbol)
+     * @param clave la clave que se desea localizar en el árbol
+     * @return el nodo que contiene la clave, o null si no se encuentra
+     */
     private NodoAVL<T> buscar(NodoAVL<T> nodo, T clave) {
         if (nodo == null) return null;
         int cmp = clave.compareTo(nodo.clave);
@@ -98,18 +119,43 @@ public class ArbolAVL<T extends Comparable<T>> {
     
     // --- Balanceo y rotaciones ---
     
+    /**
+     * Actualiza la altura de un nodo en función de las alturas de sus hijos.
+     * 
+     * @param nodo el nodo cuya altura se desea actualizar 
+     */
     private void actualizarAltura(NodoAVL<T> nodo) {
         nodo.altura = 1 + Math.max(altura(nodo.izquierdo), altura(nodo.derecho));
     }
     
+    /**
+     * Devuelve la altura de un nodo.
+     * 
+     * @param nodo el nodo cuya altura se desea consultar
+     * @return la altura del nodo, o 0 si es null
+     */
     private int altura(NodoAVL<T> nodo) {
         return nodo == null ? 0 : nodo.altura;
     }
     
+    /**
+     * Calcula el factor de balance de un nodo.
+     * El factor se define como la diferencia entre la altura del subárbol izquierdo y derecho.
+     * 
+     * @param nodo el nodo cuyo balance se desea calcular
+     * @return el factor de balance del nodo
+     */
     private int factorBalance(NodoAVL<T> nodo) {
         return nodo == null ? 0 : altura(nodo.izquierdo) - altura(nodo.derecho);
     }
     
+    /**
+     * Realiza el balanceo de un nodo si su factor de balance indica desequilibrio.
+     * Aplica rotaciones simples o dobles según sea el caso: LL, RR, LR, RL.
+     * 
+     * @param nodo el nodo que se desea balancear
+     * @return el nuevo nodo raíz del subárbol balanceado
+     */
     private NodoAVL<T> balancear(NodoAVL<T> nodo) {
         int fb = factorBalance(nodo);
         
@@ -131,10 +177,17 @@ public class ArbolAVL<T extends Comparable<T>> {
             nodo.derecho = rotacionDerecha(nodo.derecho);
             return rotacionIzquierda(nodo);
         } 
-        
+        // No requiere balanceo
         return nodo;
     }
     
+    /**
+     * Realiza una rotación simple hacia la derecha sobre el subárbol desequilibrado.
+     * Este método se aplica en el caso LL (Left-Left), donde el desequilibrio ocurre en el hijo izquierdo del hijo izquierdo.
+     * 
+     * @param y el nodo raíz del subárbol desequilibrado
+     * @return el nuevo nodo raíz del subárbol después de la rotación
+     */
     private NodoAVL<T> rotacionDerecha(NodoAVL<T> y) {
         NodoAVL<T> x = y.izquierdo;
         NodoAVL<T> T2 = x.derecho;
@@ -148,6 +201,13 @@ public class ArbolAVL<T extends Comparable<T>> {
         return x;
     }
     
+    /**
+     * Realiza una rotación simple hacia la izquierda sobre el subárbol desequilibrado.
+     * Este método se aplica en el caso RR (Right-Right), donde el desequilibrio ocurre en el hijo derecho del hijo derecho.
+     * 
+     * @param x el nodo raíz del subárbol desequilibrado
+     * @return el nuevo nodo raíz del subárbol después de la rotación
+     */
     private NodoAVL<T> rotacionIzquierda(NodoAVL<T> x) {
         NodoAVL<T> y = x.derecho;
         NodoAVL<T> T2 = y.izquierdo;
