@@ -5,16 +5,10 @@
 package TEST;
 
 import java.io.File;
-import java.awt.Dimension;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import java.io.File;
-import logica.Analizador;
 import logica.Lector;
+import logica.Repositorio;
 import modelo.Resumen;
-import javax.swing.JOptionPane;
-
 /**
  *
  * @author COMPUGAMER
@@ -22,44 +16,35 @@ import javax.swing.JOptionPane;
 public class MainPrueba {
 
     public static void main(String[] args) {
-        // 1. Seleccionamos el archivo (Asegurate que la ruta sea correcta)
+        // 1. Leer el archivo original (Simulando que el usuario carga uno)
         File archivo = new File("C:\\Users\\COMPUGAMER\\Desktop\\prueba.txt");
+        Lector lector = new Lector();
+        Resumen resumenNuevo = lector.leer(archivo);
         
-        // 2. Usar tu Lector
-        Lector miLector = new Lector();
-        Resumen miResumen = miLector.leer(archivo);
-        
-        if (miResumen != null) {
-            // 3. Usar tu Analizador
-            Analizador miAnalizador = new Analizador();
-            String reporte = miAnalizador.analizar(miResumen);
+        if (resumenNuevo != null) {
+            // 2. Guardar en la "Base de Datos"
+            Repositorio repo = new Repositorio();
+            boolean exito = repo.guardarResumen(resumenNuevo);
             
-            // 4. CONSTRUIR EL TEXTO FINAL PARA MOSTRAR
-            StringBuilder salidaVisual = new StringBuilder();
-            salidaVisual.append("=== PRUEBA DE LECTURA Y ANÁLISIS ===\n\n");
+            if (exito) {
+                JOptionPane.showMessageDialog(null, "¡Resumen guardado exitosamente en la BD!");
+            } else {
+                JOptionPane.showMessageDialog(null, "Error al guardar.");
+            }
             
-            salidaVisual.append("--- DATOS CRUDOS DEL OBJETO ---\n");
-            salidaVisual.append(miResumen.toString()).append("\n\n");
+            // 3. Simular que cerramos el programa y volvemos a entrar (Cargar todo)
+            System.out.println("--- CARGANDO DESDE LA BASE DE DATOS ---");
+            Resumen[] todosLosResumenes = repo.cargarResumenes();
             
-            salidaVisual.append("--- RESULTADO DEL ANALIZADOR ---\n");
-            salidaVisual.append(reporte);
-
-            // 5. CREAR LA VENTANA (JTextArea dentro de un Scroll)
-            // Esto usa las fuentes nativas de Windows, por lo que los acentos se verán BIEN.
-            JTextArea areaTexto = new JTextArea(salidaVisual.toString());
-            areaTexto.setLineWrap(true);       // Cortar líneas largas automáticamente
-            areaTexto.setWrapStyleWord(true);  // Cortar por palabras completas
-            areaTexto.setEditable(false);      // Solo lectura
-            
-            // Ponemos el texto dentro de un panel con barras de desplazamiento
-            JScrollPane scroll = new JScrollPane(areaTexto);
-            scroll.setPreferredSize(new Dimension(600, 500)); // Tamaño de la ventana
-            
-            // Mostrar la ventana emergente
-            JOptionPane.showMessageDialog(null, scroll, "Resultado de la Prueba - Azael", JOptionPane.INFORMATION_MESSAGE);
+            System.out.println("Se encontraron " + todosLosResumenes.length + " resumenes guardados:");
+            for (Resumen r : todosLosResumenes) {
+                if (r != null) {
+                    System.out.println("Titulo: " + r.getTitulo());
+                }
+            }
             
         } else {
-            JOptionPane.showMessageDialog(null, "Error: No se pudo leer el archivo.\nVerifica que exista en el escritorio.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
+            System.out.println("No se pudo leer el archivo original.");
+       }
+    } 
 }
