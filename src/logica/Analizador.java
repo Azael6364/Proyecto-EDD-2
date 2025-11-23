@@ -22,7 +22,7 @@ public class Analizador {
     public int contarFrecuencia(String cuerpo, String palabra) {
         if (cuerpo == null || palabra == null || palabra.isEmpty()) return 0;
 
-        // 1. Normalizacion del texto para asegurar coincidencias precisas
+        // 1. Normalizacion del texto 
         String textoNorm = normalizarTexto(cuerpo);
         String palabraNorm = normalizarTexto(palabra);
 
@@ -30,11 +30,10 @@ public class Analizador {
         int contador = 0;
         int indice = 0;
 
-        // indexOf devuelve -1 si no encuentra la frase.
-        // Si la encuentra, devuelve la posicion y sumamos al contador.
+        // Devuelve -1 si no encuentra la frase.
+        // Si la encuentra, devuelve la posicion y suma al contador.
         while ((indice = textoNorm.indexOf(palabraNorm, indice)) != -1) {
             contador++;
-            // Avanzamos el indice la longitud de la palabra encontrada para seguir buscando adelante
             indice += palabraNorm.length(); 
         }
         
@@ -44,9 +43,9 @@ public class Analizador {
     /**
      * Metodo auxiliar para normalizar cadenas de texto.
      * Convierte a minusculas y reemplaza signos de puntuacion por espacios
-     * para evitar falsos negativos (ej: "palabra." vs "palabra").
+     * para evitar falsos negativos.
      * * @param texto La cadena original.
-     * @return La cadena normalizada y limpia.
+     * @return La cadena normalizada.
      */
     private String normalizarTexto(String texto) {
         if (texto == null) return "";
@@ -68,7 +67,7 @@ public class Analizador {
 
     /**
      * Genera el reporte final con el formato solicitado en el planteamiento del problema.
-     * * @param r El objeto Resumen a analizar.
+     * * @param r El objeto resumen a analizar.
      * @return Un String formateado con el titulo, autores y frecuencias.
      */
     public String analizar(Resumen r) {
@@ -77,7 +76,7 @@ public class Analizador {
         sb.append("Nombre del trabajo: ").append(r.getTitulo()).append("\n");
         sb.append("Autores: ").append(r.autoresToString()).append("\n");
         
-        // Recorremos todas las palabras clave del resumen y calculamos su frecuencia
+        // Recorre todas las palabras clave del resumen y calculamos su frecuencia
         for (String clave : r.getPalabrasClaves()) {
             int freq = contarFrecuencia(r.getCuerpo(), clave);
             sb.append(clave).append(": ").append(freq).append("\n");
