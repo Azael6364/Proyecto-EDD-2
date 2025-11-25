@@ -1,11 +1,10 @@
 package Interfaz;
 
-import logica.Controlador; // Para conectar con tu lógica
-import java.io.File;       // Para manejar archivos
-import javax.swing.JFileChooser; // Para la ventana de abrir archivo
-import javax.swing.JOptionPane;  // Para mensajes emergentes
-import javax.swing.DefaultListModel;
-import estructuras.ListaEnlazada;
+import logica.Controlador; 
+import java.io.File;       
+import javax.swing.JFileChooser; 
+import javax.swing.JOptionPane;  
+
    
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -25,11 +24,15 @@ public class MainFrame extends javax.swing.JFrame {
      */
     public MainFrame() {
         initComponents();
-        this.controlador = new Controlador(); 
+        lblTituloAgregar.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTituloAgregar.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 24));
+        this.controlador = new Controlador();
+        this.setSize(950, 450);
         this.setLocationRelativeTo(null); // Para centrar la ventana
         actualizarListaResumenes();
         actualizarComboAutores();
         actualizarListaPalabrasClave();
+        decorarInterfaz();
     }
 
     /**
@@ -129,7 +132,7 @@ public class MainFrame extends javax.swing.JFrame {
                             .addGroup(pnlAgregarResumenLayout.createSequentialGroup()
                                 .addComponent(btnSeleccionarArchivo)
                                 .addGap(104, 104, 104)
-                                .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE)))))
+                                .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 504, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
         pnlAgregarResumenLayout.setVerticalGroup(
@@ -144,7 +147,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(btnSeleccionarArchivo))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnAgregarResumen)
-                .addContainerGap(86, Short.MAX_VALUE))
+                .addContainerGap(116, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("1. Agregar Resumen", pnlAgregarResumen);
@@ -198,7 +201,7 @@ public class MainFrame extends javax.swing.JFrame {
                             .addGroup(pnlAnalizarResumenLayout.createSequentialGroup()
                                 .addGap(22, 22, 22)
                                 .addComponent(scrReporteAnalisis, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(41, Short.MAX_VALUE))
+                .addContainerGap(244, Short.MAX_VALUE))
         );
         pnlAnalizarResumenLayout.setVerticalGroup(
             pnlAnalizarResumenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -259,7 +262,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addGroup(pnlBuscarPalabraClaveLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(scrResultadosPalabra, javax.swing.GroupLayout.PREFERRED_SIZE, 641, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addContainerGap(224, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlBuscarPalabraClaveLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addGroup(pnlBuscarPalabraClaveLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -313,7 +316,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGap(15, 15, 15)
                 .addComponent(lblInstruccionAutor)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cmbAutores, 0, 180, Short.MAX_VALUE)
+                .addComponent(cmbAutores, 0, 383, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnVerDetallesAutor)
                 .addGap(29, 29, 29))
@@ -326,7 +329,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(lblInstruccionAutor)
                     .addComponent(cmbAutores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnVerDetallesAutor))
-                .addContainerGap(156, Short.MAX_VALUE))
+                .addContainerGap(186, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("4. Buscar por Autor", pnlBuscarAutor);
@@ -372,7 +375,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(lblInstruccionListaPC)
                         .addGap(59, 59, 59)
                         .addComponent(lblDetallesPCLista)))
-                .addContainerGap(55, Short.MAX_VALUE))
+                .addContainerGap(258, Short.MAX_VALUE))
         );
         pnlListarPalabrasLayout.setVerticalGroup(
             pnlListarPalabrasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -389,7 +392,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(scrDetallesPalabraClave, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnVerDetallesPCLista)
-                .addContainerGap(26, Short.MAX_VALUE))
+                .addContainerGap(56, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("5. Listar Palabras Clave", pnlListarPalabras);
@@ -407,14 +410,14 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel2)
-                .addGap(71, 71, 71))
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 536, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(171, 171, 171))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 57, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -625,6 +628,42 @@ public class MainFrame extends javax.swing.JFrame {
         jList2.setModel(modelo);
     }
     
+    private void decorarInterfaz() {
+        // COLORES MODERNOS
+        java.awt.Color colorFondo = java.awt.Color.WHITE;
+        java.awt.Color colorPrimario = new java.awt.Color(0, 102, 204); // Azul profesional
+        java.awt.Color colorTextoBtn = java.awt.Color.WHITE;
+        java.awt.Font fuenteBotones = new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 14);
+
+        // 1. PINTAR PANELES (Para quitar el gris triste)
+        this.getContentPane().setBackground(colorFondo);
+        pnlAgregarResumen.setBackground(colorFondo);
+        pnlAnalizarResumen.setBackground(colorFondo);
+        pnlBuscarAutor.setBackground(colorFondo);
+        pnlBuscarPalabraClave.setBackground(colorFondo);
+        pnlListarPalabras.setBackground(colorFondo);
+        jTabbedPane1.setBackground(colorFondo);
+
+        // 2. ESTILIZAR BOTONES (Función auxiliar para no repetir código)
+        estilizarBoton(btnSeleccionarArchivo, colorPrimario, colorTextoBtn, fuenteBotones);
+        estilizarBoton(btnAgregarResumen, new java.awt.Color(40, 167, 69), colorTextoBtn, fuenteBotones); // Verde para agregar
+        estilizarBoton(btnAnalizar, colorPrimario, colorTextoBtn, fuenteBotones);
+        estilizarBoton(btnBuscarPalabra, colorPrimario, colorTextoBtn, fuenteBotones);
+        estilizarBoton(btnVerDetallesPC, colorPrimario, colorTextoBtn, fuenteBotones);
+        estilizarBoton(btnVerDetallesAutor, colorPrimario, colorTextoBtn, fuenteBotones);
+        estilizarBoton(btnVerDetallesPCLista, colorPrimario, colorTextoBtn, fuenteBotones);
+    }
+
+    // Método pequeño para aplicar estilo a cualquier botón
+    private void estilizarBoton(javax.swing.JButton btn, java.awt.Color fondo, java.awt.Color texto, java.awt.Font fuente) {
+        btn.setBackground(fondo);
+        btn.setForeground(texto);
+        btn.setFont(fuente);
+        btn.setFocusPainted(false); // Quita el recuadro feo al hacer clic
+        btn.setBorderPainted(false); // Hace el botón plano (opcional)
+        btn.setOpaque(true);
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -650,6 +689,10 @@ public class MainFrame extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>

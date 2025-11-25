@@ -92,9 +92,17 @@ public class Lector {
             
             // Procesamiento final de los datos acumulados
             String autoresString = autoresBuilder.toString();
+            
             if (!autoresString.isEmpty()) {
                 autores = autoresString.split(";");
+                
+                // Recorremos cada autor para quitar guiones y espacios extra
+                for (int i = 0; i < autores.length; i++) {
+                    autores[i] = autores[i].replace("-", " ").trim();
+                }
+                // -------------------------------------------
             }
+            
             cuerpo = cuerpoBuilder.toString().trim();
 
             // Validacion minima: Debe existir un titulo para crear el objeto
