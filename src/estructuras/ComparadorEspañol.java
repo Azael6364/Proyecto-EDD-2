@@ -30,7 +30,7 @@ public class ComparadorEspañol implements Comparator<String> {
      * 
      * @param s1 primera cadena
      * @param s2 segunda cadena
-     * @return valor negativo si s1 < s2, positivo si s1 > s2, 0 si son iguales
+     * @return valor negativo si s1 es menor que s2, positivo si s1 es mayor que s2, 0 si son iguales
      */
     @Override
     public int compare(String s1, String s2) {
