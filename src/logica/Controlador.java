@@ -11,7 +11,11 @@ import java.io.File;
 import modelo.Resumen;
 
 /**
- * Controlador que conecta la Interfaz con la Lógica y las Estructuras.
+ * Controlador principal que gestiona toda la lógica de la aplicacion.
+ * Coordina las operaciones entre la interfaz grafica, las estructuras de datos 
+ * y el sistema de persistencia. Implementa las funcionalidades requeridas 
+ * utilizando HashTable para busquedas O(1) y Arboles AVL para ordenamientos eficientes.
+ * 
  * @author COMPUGAMER
  */
 public class Controlador {
@@ -30,6 +34,11 @@ public class Controlador {
     // ArbolAVL<String>: Clave=PalabraClave, Guarda=Set de Títulos
     private final ArbolAVL<String> arbolPalabrasClave;
 
+    /**
+     * Constructor principal del Controlador.
+     * Inicializa todas las estructuras de datos y carga la información existente.
+     * Si no hay datos previos, precarga ejemplos para demostracion.
+     */
     public Controlador() {
         this.lector = new Lector();
         this.analizador = new Analizador();
@@ -43,22 +52,76 @@ public class Controlador {
         cargarDatosAlInicio();
     }
 
+    /**
+     * Carga los datos al iniciar la aplicacion desde el repositorio persistente.
+     * Si no existen datos previos, carga ejemplos demostrativos automaticamente.
+     * Garantiza que el sistema siempre tenga datos para trabajar.
+     */
     private void cargarDatosAlInicio() {
+        // 1. Cargar datos existentes del repositorio
         Resumen[] guardados = repositorio.cargarResumenes();
         for (Resumen r : guardados) {
             if (r != null) indexarResumen(r);
         }
+        
+        // 2. Si no hay datos, precargar ejemplos automáticamente
+        if (tablaResumenes.size() == 0) {
+            precargarEjemplos();
+        }
     }
 
     /**
-     * Agrega un resumen desde un archivo.
+     * Precarga resumenes de ejemplo desde archivos de texto cuando la base de datos está vacía.
+     * Los archivos deben ubicarse en la carpeta 'ejemplos/' en la raíz del proyecto.
+     * 
+     */
+    private void precargarEjemplos() {
+        System.out.println("Iniciando precarga de ejemplos...");
+        
+        // Lista de archivos de ejemplo ubicados en la carpeta 'ejemplos/'
+        String[] archivosEjemplo = {
+            "ejemplos/ejemplo1.txt",
+            "ejemplos/ejemplo2.txt", 
+            "ejemplos/ejemplo3.txt"
+        };
+        
+        int contadorCargados = 0;
+        
+        for (String rutaArchivo : archivosEjemplo) {
+            try {
+                File archivo = new File(rutaArchivo);
+                if (archivo.exists()) {
+                    Resumen nuevo = lector.leer(archivo);
+                    if (nuevo != null && !tablaResumenes.contieneClave(nuevo.getTitulo())) {
+                        indexarResumen(nuevo);
+                        repositorio.guardarResumen(nuevo);
+                        contadorCargados++;
+                        System.out.println("✓ Precargado: " + nuevo.getTitulo());
+                    }
+                } else {
+                    System.out.println("⚠ Archivo no encontrado: " + rutaArchivo);
+                }
+            } catch (Exception e) {
+                System.err.println("✗ Error al precargar " + rutaArchivo + ": " + e.getMessage());
+            }
+        }
+        
+        System.out.println("Precarga completada. " + contadorCargados + " resúmenes agregados.");
+    }
+
+    /**
+     * Agrega un resumen desde un archivo de texto.
+     * Realiza validaciones de formato y duplicados antes de proceder con el almacenamiento.
+     * 
+     * @param archivo Archivo de texto con el resumen en formato estructurado
+     * @return Mensaje de resultado indicando éxito o error especifico
      */
     public String agregarResumen(File archivo) {
         Resumen nuevo = lector.leer(archivo);
         
         if (nuevo == null) return "Error: No se pudo leer el archivo o formato incorrecto.";
         
-        // Validación de duplicados en O(1) usando la Hash Table
+        // Validacion de duplicados en O(1) usando la Hash Table
         if (tablaResumenes.contieneClave(nuevo.getTitulo())) {
             return "Error: El resumen ya existe en la base de datos.";
         }
@@ -72,26 +135,33 @@ public class Controlador {
     
     /**
      * Inserta el resumen en la Tabla Hash y en los Árboles AVL.
+     * Este metodo es fundamental para mantener la consistencia entre las estructuras de datos.
+     * 
+     * @param r Objeto Resumen a indexar en todas las estructuras
      */
     private void indexarResumen(Resumen r) {
-        // 1. Hash Table
+        // 1. Hash Table - Búsqueda por titulo en O(1)
         tablaResumenes.put(r.getTitulo(), r);
         
-        // 2. Árbol Autores: Convertimos nombre a minúscula para la clave
+        // 2. Arbol Autores - Búsqueda y ordenamiento eficiente
         for (String autor : r.getAutores()) {
             // Usamos toLowerCase() para que la búsqueda sea insensible a mayúsculas
             arbolAutores.insertar(autor.trim(), r.getTitulo());
         }
         
-        // 3. Árbol Palabras Clave: Convertimos a minúscula para la clave
+        // 3. Arbol Palabras Clave - Búsqueda y ordenamiento eficiente
         for (String palabra : r.getPalabrasClaves()) {
-            // Usamos toLowerCase() para estandarizar la búsqueda
+            // Usamos toLowerCase() para estandarizar la busqueda
             arbolPalabrasClave.insertar(palabra.trim().toLowerCase(), r.getTitulo());
         }
     }
     
     /**
      * Busca un resumen completo dado su título exacto.
+     * 
+     * 
+     * @param titulo Título exacto del resumen a buscar
+     * @return Objeto Resumen encontrado o null si no existe
      */
     public Resumen buscarResumenPorTitulo(String titulo) {
         return tablaResumenes.get(titulo);
@@ -99,7 +169,10 @@ public class Controlador {
 
     /**
      * Busca investigaciones por Autor.
-     * Recupera los títulos del AVL y luego busca los objetos en la Hash Table.
+     * .
+     * 
+     * @param autor Nombre del autor a buscar
+     * @return Lista enlazada con los resúmenes del autor especificado
      */
     public ListaEnlazada<Resumen> buscarPorAutor(String autor) {
         ListaEnlazada<String> titulos = arbolAutores.obtenerTitulos(autor);
@@ -108,9 +181,13 @@ public class Controlador {
 
     /**
      * Busca investigaciones por Palabra Clave.
+     * Realiza busqueda insensible a mayusculas mediante normalización.
+     * 
+     * @param palabra Palabra clave a buscar en los resumenes
+     * @return Lista enlazada con los resumenes que contienen la palabra clave
      */
     public estructuras.ListaEnlazada<Resumen> buscarPorPalabraClave(String palabra) {
-        // Convertimos lo que escribió el usuario a minúscula antes de buscar en el árbol
+        // Convertimos lo que escribió el usuario a minuscula antes de buscar en el árbol
         String busqueda = palabra.trim().toLowerCase();
         
         ListaEnlazada<String> titulos = arbolPalabrasClave.obtenerTitulos(busqueda);
@@ -118,8 +195,12 @@ public class Controlador {
     }
     
     /**
-     * Método auxiliar para convertir una lista de títulos (del AVL) 
-     * en una lista de objetos Resumen (de la Hash Table).
+     * Metodo auxiliar para convertir una lista de títulos 
+     * en una lista de objetos Resumen.
+     * Garantiza la integridad de los datos durante la conversion.
+     * 
+     * @param titulos Lista de títulos obtenida del Árbol AVL
+     * @return Lista de objetos Resumen completos
      */
     private ListaEnlazada<Resumen> convertirTitulosAResumenes(ListaEnlazada<String> titulos) {
         ListaEnlazada<Resumen> resultados = new ListaEnlazada<>();
@@ -132,27 +213,40 @@ public class Controlador {
         return resultados;
     }
 
+    /**
+     * Genera un analisis completo de frecuencias de palabras clave para un resumen.
+     * 
+     * @param r Resumen a analizar
+     * @return String formateado con el reporte de análisis
+     */
     public String analizarResumen(Resumen r) {
         return analizador.analizar(r);
     }
     
     /**
      * Obtiene todos los títulos guardados (útil para llenar listas en la GUI).
+     * 
+     * @return Lista enlazada con todos los títulos de resúmenes almacenados
      */
     public ListaEnlazada<String> obtenerTodosLosTitulos() {
         return tablaResumenes.claves();
     }
     
     /**
-     * Obtiene la lista de todos los autores ordenados alfabéticamente.
-     * Usa el recorrido InOrden del Árbol AVL.
+     * Obtiene la lista de todos los autores ordenados alfabeticamente.
+     * Usa el recorrido InOrden del Árbol AVL para garantizar el orden.
+     * 
+     * @return Lista enlazada con autores ordenados alfabéticamente
      */
     public ListaEnlazada<String> obtenerAutoresRegistrados() {
         return arbolAutores.inorden();
     }
     
     /**
-     * Obtiene todas las palabras clave ordenadas alfabéticamente.
+     * Obtiene todas las palabras clave ordenadas alfabeticamente.
+     * Utiliza el recorrido InOrden del Arbol AVL de palabras clave.
+     * 
+     * @return Lista enlazada con palabras clave ordenadas alfabéticamente
      */
     public ListaEnlazada<String> obtenerPalabrasClaveListadas() {
         return arbolPalabrasClave.inorden();
