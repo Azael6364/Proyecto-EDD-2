@@ -8,7 +8,6 @@ import estructuras.ArbolAVL;
 import estructuras.HashTable;
 import estructuras.ListaEnlazada; 
 import java.io.File;
-import java.util.Set;
 import modelo.Resumen;
 
 /**
@@ -103,7 +102,7 @@ public class Controlador {
      * Recupera los títulos del AVL y luego busca los objetos en la Hash Table.
      */
     public ListaEnlazada<Resumen> buscarPorAutor(String autor) {
-        Set<String> titulos = arbolAutores.obtenerTitulos(autor);
+        ListaEnlazada<String> titulos = arbolAutores.obtenerTitulos(autor);
         return convertirTitulosAResumenes(titulos);
     }
 
@@ -114,7 +113,7 @@ public class Controlador {
         // Convertimos lo que escribió el usuario a minúscula antes de buscar en el árbol
         String busqueda = palabra.trim().toLowerCase();
         
-        java.util.Set<String> titulos = arbolPalabrasClave.obtenerTitulos(busqueda);
+        ListaEnlazada<String> titulos = arbolPalabrasClave.obtenerTitulos(busqueda);
         return convertirTitulosAResumenes(titulos);
     }
     
@@ -122,7 +121,7 @@ public class Controlador {
      * Método auxiliar para convertir una lista de títulos (del AVL) 
      * en una lista de objetos Resumen (de la Hash Table).
      */
-    private ListaEnlazada<Resumen> convertirTitulosAResumenes(Set<String> titulos) {
+    private ListaEnlazada<Resumen> convertirTitulosAResumenes(ListaEnlazada<String> titulos) {
         ListaEnlazada<Resumen> resultados = new ListaEnlazada<>();
         for (String titulo : titulos) {
             Resumen r = tablaResumenes.get(titulo);
@@ -148,14 +147,14 @@ public class Controlador {
      * Obtiene la lista de todos los autores ordenados alfabéticamente.
      * Usa el recorrido InOrden del Árbol AVL.
      */
-    public java.util.List<String> obtenerAutoresRegistrados() {
+    public ListaEnlazada<String> obtenerAutoresRegistrados() {
         return arbolAutores.inorden();
     }
     
     /**
      * Obtiene todas las palabras clave ordenadas alfabéticamente.
      */
-    public java.util.List<String> obtenerPalabrasClaveListadas() {
+    public ListaEnlazada<String> obtenerPalabrasClaveListadas() {
         return arbolPalabrasClave.inorden();
     }
 }

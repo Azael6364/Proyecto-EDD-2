@@ -562,29 +562,59 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void btnVerDetallesPCListaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerDetallesPCListaActionPerformed
        String palabraSeleccionada = jList2.getSelectedValue();
-        
-        if (palabraSeleccionada == null) {
-            JOptionPane.showMessageDialog(this, "Seleccione una palabra de la lista.");
-            return;
+    
+    if (palabraSeleccionada == null) {
+        JOptionPane.showMessageDialog(this, "Seleccione una palabra de la lista.");
+        return;
+    }
+    
+    estructuras.ListaEnlazada<modelo.Resumen> resultados = controlador.buscarPorPalabraClave(palabraSeleccionada);
+    
+    StringBuilder sb = new StringBuilder();
+    sb.append("Artículos con la palabra clave '").append(palabraSeleccionada).append("':\n\n");
+    
+    if (resultados != null && !resultados.estaVacia()) {
+        for (modelo.Resumen r : resultados) {
+            // Obtener el análisis completo del resumen
+            String analisisCompleto = controlador.analizarResumen(r);
+            int frecuencia = extraerFrecuenciaDelAnalisis(analisisCompleto, palabraSeleccionada);
+            
+            sb.append("• ").append(r.getTitulo())
+              .append(" (Frecuencia: ").append(frecuencia).append(")\n");
         }
-        
-        // Buscamos los artículos donde aparece esa palabra
-        estructuras.ListaEnlazada<modelo.Resumen> resultados = controlador.buscarPorPalabraClave(palabraSeleccionada);
-        
-        StringBuilder sb = new StringBuilder();
-        sb.append("Artículos con la palabra clave '").append(palabraSeleccionada).append("':\n\n");
-        
-        if (resultados != null && !resultados.estaVacia()) {
-            for (modelo.Resumen r : resultados) {
-                // Calculamos cuántas veces aparece la palabra en ese resumen
-                int frecuencia = controlador.analizarResumen(r).split(palabraSeleccionada).length - 1; 
-                // Nota: El cálculo de frecuencia exacto ya lo hace tu Analizador, 
-                // aquí solo mostramos el título para cumplir el requisito.
-                sb.append("• ").append(r.getTitulo()).append("\n");
+    } else {
+        sb.append("No se encontraron artículos con esta palabra clave.");
+    }
+    
+    txtDetallesPalabraClave.setText(sb.toString());
+}
+
+/**
+ * Método auxiliar para extraer la frecuencia de una palabra específica del análisis
+ */
+private int extraerFrecuenciaDelAnalisis(String analisisCompleto, String palabraBuscada) {
+    // Dividir el análisis en líneas
+    String[] lineas = analisisCompleto.split("\n");
+    
+    // Buscar la línea que corresponde a la palabra que nos interesa
+    for (String linea : lineas) {
+        linea = linea.trim();
+        // La línea debe empezar con la palabra buscada seguida de ":"
+        if (linea.startsWith(palabraBuscada + ":")) {
+            try {
+                // Extraer el número después de los ":"
+                String[] partes = linea.split(":");
+                if (partes.length >= 2) {
+                    return Integer.parseInt(partes[1].trim());
+                }
+            } catch (NumberFormatException e) {
+                // Si hay error al convertir, retornar 0
+                return 0;
             }
         }
-        
-        txtDetallesPalabraClave.setText(sb.toString());
+    }
+    // Si no se encuentra la palabra en el análisis, frecuencia es 0
+    return 0;
     }//GEN-LAST:event_btnVerDetallesPCListaActionPerformed
 
     // Método para refrescar la lista visual de investigaciones
@@ -605,28 +635,28 @@ public class MainFrame extends javax.swing.JFrame {
     }
     
     private void actualizarComboAutores() {
-        cmbAutores.removeAllItems();
-        java.util.List<String> autores = controlador.obtenerAutoresRegistrados();
-        
-        if (autores != null) {
-            for (String autor : autores) {
-                cmbAutores.addItem(autor);
-            }
+    cmbAutores.removeAllItems();
+    estructuras.ListaEnlazada<String> autores = controlador.obtenerAutoresRegistrados();
+    
+    if (autores != null && !autores.estaVacia()) {
+        for (String autor : autores) {
+            cmbAutores.addItem(autor);
         }
     }
+}
     
     private void actualizarListaPalabrasClave() {
-        javax.swing.DefaultListModel<String> modelo = new javax.swing.DefaultListModel<>();
-        java.util.List<String> palabras = controlador.obtenerPalabrasClaveListadas();
-        
-        if (palabras != null) {
-            for (String p : palabras) {
-                modelo.addElement(p);
-            }
+    javax.swing.DefaultListModel<String> modelo = new javax.swing.DefaultListModel<>();
+    // NUEVO: Usar ListaEnlazada en lugar de java.util.List
+    estructuras.ListaEnlazada<String> palabras = controlador.obtenerPalabrasClaveListadas();
+    
+    if (palabras != null && !palabras.estaVacia()) {
+        for (String p : palabras) {
+            modelo.addElement(p);
         }
-        // Asignamos a la lista de la pestaña 5 
-        jList2.setModel(modelo);
     }
+    jList2.setModel(modelo);
+}
     
     private void decorarInterfaz() {
         // COLORES MODERNOS
