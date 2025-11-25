@@ -1,12 +1,16 @@
-package interfaz;
+package Interfaz;
 
+import logica.Controlador; // Para conectar con tu lógica
+import java.io.File;       // Para manejar archivos
+import javax.swing.JFileChooser; // Para la ventana de abrir archivo
+import javax.swing.JOptionPane;  // Para mensajes emergentes
+import javax.swing.DefaultListModel;
+import estructuras.ListaEnlazada;
+   
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
-import java.io.File;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -14,11 +18,16 @@ import javax.swing.JOptionPane;
  */
 public class MainFrame extends javax.swing.JFrame {
 
+    private final Controlador controlador; 
+
     /**
      * Creates new form MainFrame
      */
     public MainFrame() {
         initComponents();
+        this.controlador = new Controlador(); 
+        this.setLocationRelativeTo(null); // Para centrar la ventana
+        actualizarListaResumenes();
     }
 
     /**
@@ -271,8 +280,18 @@ public class MainFrame extends javax.swing.JFrame {
         lblInstruccionAutor.setText("Seleccione el Autor para Buscar Investigaciones:");
 
         cmbAutores.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cmbAutores.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbAutoresActionPerformed(evt);
+            }
+        });
 
         btnVerDetallesAutor.setText("BUSCAR INVESTIGACIONES");
+        btnVerDetallesAutor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVerDetallesAutorActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout pnlBuscarAutorLayout = new javax.swing.GroupLayout(pnlBuscarAutor);
         pnlBuscarAutor.setLayout(pnlBuscarAutorLayout);
@@ -388,62 +407,93 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSeleccionarArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSeleccionarArchivoActionPerformed
-        // TODO add your handling code here:
+        JFileChooser selector = new JFileChooser();
+        int resultado = selector.showOpenDialog(this);
+        
+        if (resultado == JFileChooser.APPROVE_OPTION) {
+            File archivo = selector.getSelectedFile();
+            jTextField2.setText(archivo.getAbsolutePath()); 
+        }
     }//GEN-LAST:event_btnSeleccionarArchivoActionPerformed
 
     private void btnAgregarResumenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarResumenActionPerformed
-        // TODO add your handling code here:String rutaArchivo = txtRutaArchivo.getText();
-    
-    // 1. VALIDACIÓN DE CAMPO VACÍO (Ruta)
-    if (rutaArchivo == null || rutaArchivo.trim().isEmpty()) {
-        JOptionPane.showMessageDialog(this, 
-            "⚠️ Debe seleccionar un archivo de resumen antes de agregar.", 
-            "Error de Validación", 
-            JOptionPane.WARNING_MESSAGE);
-        lblEstadoSistema.setText("❌ Inserción fallida: No se seleccionó archivo.");
-        return; // Detiene la ejecución
-    }
-
-    // Convertir la ruta a un objeto File
-    File archivo = new File(rutaArchivo);
-    
-    // 2. VALIDACIÓN DE EXISTENCIA DEL ARCHIVO
-    if (!archivo.exists() || archivo.isDirectory()) {
-        JOptionPane.showMessageDialog(this, 
-            "⚠️ Error: El archivo especificado no existe o es una carpeta.", 
-            "Error de Archivo", 
-            JOptionPane.ERROR_MESSAGE);
-        lblEstadoSistema.setText("❌ Inserción fallida: Archivo no encontrado.");
-        return;
-    }
-    
-   
-    iniciarProcesamientoResumen(archivo);
-    
-    
+        // 1. Obtener ruta de caja de texto 
+        String ruta = jTextField2.getText(); 
+        
+        // 2. Validaciones
+        if (ruta == null || ruta.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Primero seleccione un archivo.");
+            return;
+        }
+        
+        File archivo = new File(ruta);
+        if (!archivo.exists()) {
+            JOptionPane.showMessageDialog(this, "El archivo no existe.");
+            return;
+        }
+        
+        // 3. LLAMAR AL CONTROLADOR
+        try {
+            String mensaje = controlador.agregarResumen(archivo);
+            JOptionPane.showMessageDialog(this, mensaje);
+            
+            if (mensaje.startsWith("¡Éxito")) {
+                jTextField2.setText(""); // Limpiar campo
+                actualizarListaResumenes();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error crítico: " + e.getMessage());
+        }
     }//GEN-LAST:event_btnAgregarResumenActionPerformed
 
     private void btnAnalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnalizarActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnAnalizarActionPerformed
-// Crea este método en cualquier parte de tu clase MainFrame, pero fuera de cualquier otro método.
-private void iniciarProcesamientoResumen(File archivo ) {
-    
-    try {
-
-        // 1. Lectura del archivo para extraer Título y Palabras Clave.
-        // 2. Generación de la Función Hash y BÚSQUEDA en la Hash Table para duplicados (O(1)).
-        // 3. INSERCIÓN en: Hash Table, AVL Autores, AVL Palabras Clave (O(log n)).
-
-        // FEEDBACK DE ÉXITO
-        lblEstadoSistema.setText("✅ ¡Resumen agregado y estructuras actualizadas exitosamente!");
-        txtRutaArchivo.setText(""); // Limpia la ruta
+        // 1. Obtener qué título seleccionó el usuario en la lista
+        String tituloSeleccionado = lstInvestigaciones.getSelectedValue();
         
-    } catch (Exception e) {
-        lblEstadoSistema.setText("❌ Error al procesar o insertar datos: " + e.getMessage());
-        txtRutaArchivo.setText(""); 
+        if (tituloSeleccionado == null) {
+            JOptionPane.showMessageDialog(this, "Seleccione una investigación de la lista primero.");
+            return;
+        }
+        
+        // 2. Buscar el objeto Resumen completo usando el controlador
+        modelo.Resumen resumen = controlador.buscarResumenPorTitulo(tituloSeleccionado);
+        
+        if (resumen != null) {
+            // 3. Generar el análisis (conteo de palabras)
+            String reporte = controlador.analizarResumen(resumen);
+            
+            // 4. Mostrarlo en el área de texto (jTextArea1)
+            jTextArea1.setText(reporte);
+            // Hacer que el scroll suba al principio del texto
+            jTextArea1.setCaretPosition(0); 
+        }
+    }//GEN-LAST:event_btnAnalizarActionPerformed
+
+    private void cmbAutoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbAutoresActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbAutoresActionPerformed
+
+    private void btnVerDetallesAutorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerDetallesAutorActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnVerDetallesAutorActionPerformed
+
+    // Método para refrescar la lista visual de investigaciones
+    private void actualizarListaResumenes() {
+        javax.swing.DefaultListModel<String> modeloLista = new javax.swing.DefaultListModel<>();
+        
+        // 1. Pedir al controlador la lista de todos los títulos
+        // (Asegúrate de que tu Controlador tenga el método obtenerTodosLosTitulos)
+        estructuras.ListaEnlazada<String> listaTitulos = controlador.obtenerTodosLosTitulos();
+        
+        // 2. Recorrer la lista enlazada y agregar al modelo visual
+        for (String titulo : listaTitulos) {
+            modeloLista.addElement(titulo);
+        }
+        
+        // 3. Asignar el modelo a la JList (lstInvestigaciones)
+        lstInvestigaciones.setModel(modeloLista);
     }
-}
+    
     /**
      * @param args the command line arguments
      */
@@ -469,6 +519,9 @@ private void iniciarProcesamientoResumen(File archivo ) {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
