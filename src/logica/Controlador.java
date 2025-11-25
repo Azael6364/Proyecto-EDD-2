@@ -75,19 +75,19 @@ public class Controlador {
      * Inserta el resumen en la Tabla Hash y en los Árboles AVL.
      */
     private void indexarResumen(Resumen r) {
-        // 1. Insertar en Hash Table (Clave: Título)
+        // 1. Hash Table
         tablaResumenes.put(r.getTitulo(), r);
         
-        // 2. Insertar en Árbol de Autores
-        // El árbol guarda (Autor -> Título del resumen)
+        // 2. Árbol Autores: Convertimos nombre a minúscula para la clave
         for (String autor : r.getAutores()) {
-            arbolAutores.insertar(autor, r.getTitulo());
+            // Usamos toLowerCase() para que la búsqueda sea insensible a mayúsculas
+            arbolAutores.insertar(autor.trim(), r.getTitulo());
         }
         
-        // 3. Insertar en Árbol de Palabras Clave
-        // El árbol guarda (Palabra -> Título del resumen)
+        // 3. Árbol Palabras Clave: Convertimos a minúscula para la clave
         for (String palabra : r.getPalabrasClaves()) {
-            arbolPalabrasClave.insertar(palabra, r.getTitulo());
+            // Usamos toLowerCase() para estandarizar la búsqueda
+            arbolPalabrasClave.insertar(palabra.trim().toLowerCase(), r.getTitulo());
         }
     }
     
@@ -110,8 +110,11 @@ public class Controlador {
     /**
      * Busca investigaciones por Palabra Clave.
      */
-    public ListaEnlazada<Resumen> buscarPorPalabraClave(String palabra) {
-        Set<String> titulos = arbolPalabrasClave.obtenerTitulos(palabra);
+    public estructuras.ListaEnlazada<Resumen> buscarPorPalabraClave(String palabra) {
+        // Convertimos lo que escribió el usuario a minúscula antes de buscar en el árbol
+        String busqueda = palabra.trim().toLowerCase();
+        
+        java.util.Set<String> titulos = arbolPalabrasClave.obtenerTitulos(busqueda);
         return convertirTitulosAResumenes(titulos);
     }
     
