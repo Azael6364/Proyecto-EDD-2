@@ -140,4 +140,12 @@ public class Controlador {
     public ListaEnlazada<String> obtenerTodosLosTitulos() {
         return tablaResumenes.claves();
     }
+    
+    /**
+     * Obtiene la lista de todos los autores ordenados alfabéticamente.
+     * Usa el recorrido InOrden del Árbol AVL.
+     */
+    public java.util.List<String> obtenerAutoresRegistrados() {
+        return arbolAutores.inorden();
+    }
 }

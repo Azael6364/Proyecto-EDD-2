@@ -28,6 +28,7 @@ public class MainFrame extends javax.swing.JFrame {
         this.controlador = new Controlador(); 
         this.setLocationRelativeTo(null); // Para centrar la ventana
         actualizarListaResumenes();
+        actualizarComboAutores();
     }
 
     /**
@@ -196,7 +197,7 @@ public class MainFrame extends javax.swing.JFrame {
                             .addGroup(pnlAnalizarResumenLayout.createSequentialGroup()
                                 .addGap(22, 22, 22)
                                 .addComponent(scrReporteAnalisis, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(35, Short.MAX_VALUE))
+                .addContainerGap(41, Short.MAX_VALUE))
         );
         pnlAnalizarResumenLayout.setVerticalGroup(
             pnlAnalizarResumenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -219,6 +220,11 @@ public class MainFrame extends javax.swing.JFrame {
         lblInstruccionPC.setText("Ingrese la Palabra Clave a Buscar:");
 
         btnBuscarPalabra.setText("BUSCAR");
+        btnBuscarPalabra.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarPalabraActionPerformed(evt);
+            }
+        });
 
         lblResultadosPC.setText("Investigaciones Relacionadas:");
 
@@ -230,6 +236,11 @@ public class MainFrame extends javax.swing.JFrame {
         scrResultadosPalabra.setViewportView(jList1);
 
         btnVerDetallesPC.setText("VER DETALLES");
+        btnVerDetallesPC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVerDetallesPCActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout pnlBuscarPalabraClaveLayout = new javax.swing.GroupLayout(pnlBuscarPalabraClave);
         pnlBuscarPalabraClave.setLayout(pnlBuscarPalabraClaveLayout);
@@ -247,7 +258,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addGroup(pnlBuscarPalabraClaveLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(scrResultadosPalabra, javax.swing.GroupLayout.PREFERRED_SIZE, 641, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addContainerGap(21, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlBuscarPalabraClaveLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addGroup(pnlBuscarPalabraClaveLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -301,7 +312,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGap(15, 15, 15)
                 .addComponent(lblInstruccionAutor)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cmbAutores, 0, 173, Short.MAX_VALUE)
+                .addComponent(cmbAutores, 0, 180, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnVerDetallesAutor)
                 .addGap(29, 29, 29))
@@ -355,7 +366,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(lblInstruccionListaPC)
                         .addGap(59, 59, 59)
                         .addComponent(lblDetallesPCLista)))
-                .addContainerGap(49, Short.MAX_VALUE))
+                .addContainerGap(55, Short.MAX_VALUE))
         );
         pnlListarPalabrasLayout.setVerticalGroup(
             pnlListarPalabrasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -440,6 +451,7 @@ public class MainFrame extends javax.swing.JFrame {
             if (mensaje.startsWith("¡Éxito")) {
                 jTextField2.setText(""); // Limpiar campo
                 actualizarListaResumenes();
+                actualizarComboAutores();
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error crítico: " + e.getMessage());
@@ -474,8 +486,69 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_cmbAutoresActionPerformed
 
     private void btnVerDetallesAutorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerDetallesAutorActionPerformed
-        // TODO add your handling code here:
+        String autorSeleccionado = (String) cmbAutores.getSelectedItem();
+        
+        if (autorSeleccionado == null) return;
+        
+        // 1. Buscar en el Árbol AVL de Autores
+        estructuras.ListaEnlazada<modelo.Resumen> resultados = controlador.buscarPorAutor(autorSeleccionado);
+        
+        // 2. Mostrar resultados en un Pop-up o lista
+        // Como tu diseño no tiene una JList en esta pestaña (solo veo el combo y el botón),
+        // mostraremos los títulos en un mensaje emergente por ahora.
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append("Investigaciones de ").append(autorSeleccionado).append(":\n\n");
+        
+        if (resultados != null && !resultados.estaVacia()) {
+            for (modelo.Resumen r : resultados) {
+                sb.append("- ").append(r.getTitulo()).append("\n");
+            }
+        } else {
+            sb.append("Ninguna encontrada (Esto no debería pasar si está en el combo).");
+        }
+        
+        JOptionPane.showMessageDialog(this, sb.toString());
     }//GEN-LAST:event_btnVerDetallesAutorActionPerformed
+
+    private void btnBuscarPalabraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarPalabraActionPerformed
+        String palabra = txtPalabraClave.getText().trim();
+        
+        if (palabra.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Escriba una palabra clave.");
+            return;
+        }
+        
+        // 1. Buscar en el Árbol AVL
+        estructuras.ListaEnlazada<modelo.Resumen> resultados = controlador.buscarPorPalabraClave(palabra);
+        
+        // 2. Llenar la lista visual 
+        javax.swing.DefaultListModel<String> modelo = new javax.swing.DefaultListModel<>();
+        
+        if (resultados != null && !resultados.estaVacia()) {
+            for (modelo.Resumen r : resultados) {
+                modelo.addElement(r.getTitulo());
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "No se encontraron investigaciones con esa palabra.");
+        }
+        
+        jList1.setModel(modelo);
+    }//GEN-LAST:event_btnBuscarPalabraActionPerformed
+
+    private void btnVerDetallesPCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerDetallesPCActionPerformed
+        String titulo = jList1.getSelectedValue();
+        
+        if (titulo == null) {
+            JOptionPane.showMessageDialog(this, "Seleccione un resumen de la lista.");
+            return;
+        }
+        
+        modelo.Resumen r = controlador.buscarResumenPorTitulo(titulo);
+        if (r != null) {
+            JOptionPane.showMessageDialog(this, r.toString(), "Detalles del Resumen", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }//GEN-LAST:event_btnVerDetallesPCActionPerformed
 
     // Método para refrescar la lista visual de investigaciones
     private void actualizarListaResumenes() {
@@ -494,6 +567,16 @@ public class MainFrame extends javax.swing.JFrame {
         lstInvestigaciones.setModel(modeloLista);
     }
     
+    private void actualizarComboAutores() {
+        cmbAutores.removeAllItems();
+        java.util.List<String> autores = controlador.obtenerAutoresRegistrados();
+        
+        if (autores != null) {
+            for (String autor : autores) {
+                cmbAutores.addItem(autor);
+            }
+        }
+    }
     /**
      * @param args the command line arguments
      */
