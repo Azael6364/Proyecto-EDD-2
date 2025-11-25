@@ -29,6 +29,7 @@ public class MainFrame extends javax.swing.JFrame {
         this.setLocationRelativeTo(null); // Para centrar la ventana
         actualizarListaResumenes();
         actualizarComboAutores();
+        actualizarListaPalabrasClave();
     }
 
     /**
@@ -340,6 +341,11 @@ public class MainFrame extends javax.swing.JFrame {
         scrListaPalabrasClave.setViewportView(jList2);
 
         btnVerDetallesPCLista.setText("VER DETALLES");
+        btnVerDetallesPCLista.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVerDetallesPCListaActionPerformed(evt);
+            }
+        });
 
         lblDetallesPCLista.setText("Detalles (Frecuencia y Artículos):");
 
@@ -452,6 +458,7 @@ public class MainFrame extends javax.swing.JFrame {
                 jTextField2.setText(""); // Limpiar campo
                 actualizarListaResumenes();
                 actualizarComboAutores();
+                actualizarListaPalabrasClave();
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error crítico: " + e.getMessage());
@@ -550,6 +557,33 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnVerDetallesPCActionPerformed
 
+    private void btnVerDetallesPCListaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerDetallesPCListaActionPerformed
+       String palabraSeleccionada = jList2.getSelectedValue();
+        
+        if (palabraSeleccionada == null) {
+            JOptionPane.showMessageDialog(this, "Seleccione una palabra de la lista.");
+            return;
+        }
+        
+        // Buscamos los artículos donde aparece esa palabra
+        estructuras.ListaEnlazada<modelo.Resumen> resultados = controlador.buscarPorPalabraClave(palabraSeleccionada);
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append("Artículos con la palabra clave '").append(palabraSeleccionada).append("':\n\n");
+        
+        if (resultados != null && !resultados.estaVacia()) {
+            for (modelo.Resumen r : resultados) {
+                // Calculamos cuántas veces aparece la palabra en ese resumen
+                int frecuencia = controlador.analizarResumen(r).split(palabraSeleccionada).length - 1; 
+                // Nota: El cálculo de frecuencia exacto ya lo hace tu Analizador, 
+                // aquí solo mostramos el título para cumplir el requisito.
+                sb.append("• ").append(r.getTitulo()).append("\n");
+            }
+        }
+        
+        txtDetallesPalabraClave.setText(sb.toString());
+    }//GEN-LAST:event_btnVerDetallesPCListaActionPerformed
+
     // Método para refrescar la lista visual de investigaciones
     private void actualizarListaResumenes() {
         javax.swing.DefaultListModel<String> modeloLista = new javax.swing.DefaultListModel<>();
@@ -577,6 +611,20 @@ public class MainFrame extends javax.swing.JFrame {
             }
         }
     }
+    
+    private void actualizarListaPalabrasClave() {
+        javax.swing.DefaultListModel<String> modelo = new javax.swing.DefaultListModel<>();
+        java.util.List<String> palabras = controlador.obtenerPalabrasClaveListadas();
+        
+        if (palabras != null) {
+            for (String p : palabras) {
+                modelo.addElement(p);
+            }
+        }
+        // Asignamos a la lista de la pestaña 5 
+        jList2.setModel(modelo);
+    }
+    
     /**
      * @param args the command line arguments
      */

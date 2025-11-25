@@ -151,4 +151,11 @@ public class Controlador {
     public java.util.List<String> obtenerAutoresRegistrados() {
         return arbolAutores.inorden();
     }
+    
+    /**
+     * Obtiene todas las palabras clave ordenadas alfabéticamente.
+     */
+    public java.util.List<String> obtenerPalabrasClaveListadas() {
+        return arbolPalabrasClave.inorden();
+    }
 }
