@@ -4,8 +4,10 @@
  */
 package supermetromendeley;
 
+import Interfaz.MainFrame;
+
 /**
- *
+ * Clase principal (Main) que inicia la aplicación.
  * @author COMPUGAMER
  */
 public class SuperMetroMendeley {
@@ -14,7 +16,13 @@ public class SuperMetroMendeley {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        // Iniciar la ventana de forma segura
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                MainFrame ventana = new MainFrame();
+                ventana.setVisible(true);
+            }
+        });
     }
     
 }
