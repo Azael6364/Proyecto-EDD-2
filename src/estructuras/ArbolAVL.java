@@ -3,7 +3,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package estructuras;
-import java.util.*;
+
+import java.text.Collator;
+import java.util.Locale;
+
 /**
  * Árbol AVL para indexear autores o palabras clave.
  * Cada nodo guarda un conjunto de títulos de investigaciones asociadas.
@@ -25,7 +28,7 @@ public class ArbolAVL<T extends Comparable<T>> {
     private static class NodoAVL<T> {
         
         T clave; // Clave del nodo (por ejemplo, autor o palabra clave).
-        Set<String> titulos; // índice de investigaciones asociadas.
+        ListaEnlazada<String> titulos; // índice de investigaciones asociadas.
         NodoAVL<T> izquierdo, derecho; // Referencia al hijo izquierdo y derecho del nodo.
         int altura; // Altura del nodo dentro del árbol AVL.
 
@@ -38,8 +41,8 @@ public class ArbolAVL<T extends Comparable<T>> {
          */
         NodoAVL(T clave, String titulo) {
             this.clave = clave;
-            this.titulos = new LinkedHashSet<>();
-            this.titulos.add(titulo);
+            this.titulos = new ListaEnlazada<>();
+            this.titulos.agregar(titulo);
             this.altura = 1;
         }
     }
@@ -60,9 +63,9 @@ public class ArbolAVL<T extends Comparable<T>> {
      * @param clave
      * @return 
      */
-    public Set<String> obtenerTitulos(T clave) {
+    public ListaEnlazada<String> obtenerTitulos(T clave) {
         NodoAVL<T> nodo = buscar(raiz, clave);
-        return nodo == null ? Collections.emptySet() : nodo.titulos;
+        return nodo == null ? new ListaEnlazada<>() : nodo.titulos;
     }
     
     /**
@@ -85,8 +88,8 @@ public class ArbolAVL<T extends Comparable<T>> {
      * Devuelve todas las claves en orden alfábetico.
      * @return 
      */
-    public List<T> inorden() {
-        List<T> lista = new ArrayList<>();
+    public ListaEnlazada<T> inorden() {
+        ListaEnlazada<T> lista = new ListaEnlazada<>();
         recorridoInorden(raiz, lista);
         return lista;
     }
@@ -102,7 +105,7 @@ public class ArbolAVL<T extends Comparable<T>> {
         } else if (cmp > 0) {
             nodo.derecho = insertar(nodo.derecho, clave, titulo);
         } else {
-            nodo.titulos.add(titulo); // clave ya existe, solo agregamos título
+            nodo.titulos.agregar(titulo); // clave ya existe, solo agregamos título
             return nodo;
         }
         
@@ -110,10 +113,10 @@ public class ArbolAVL<T extends Comparable<T>> {
         return balancear(nodo);        
     }
     
-    private void recorridoInorden(NodoAVL<T> nodo, List<T> lista) {
+    private void recorridoInorden(NodoAVL<T> nodo, ListaEnlazada<T> lista) {
         if (nodo == null) return;
         recorridoInorden(nodo.izquierdo, lista);
-        lista.add(nodo.clave);
+        lista.agregar(nodo.clave);
         recorridoInorden(nodo.derecho, lista);
     }
     
