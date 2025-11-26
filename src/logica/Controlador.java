@@ -134,7 +134,7 @@ public class Controlador {
     }
     
     /**
-     * Inserta el resumen en la Tabla Hash y en los Árboles AVL.
+     * Inserta el resumen en la Tabla Hash y en los Arboles AVL.
      * Este metodo es fundamental para mantener la consistencia entre las estructuras de datos.
      * 
      * @param r Objeto Resumen a indexar en todas las estructuras
@@ -149,7 +149,7 @@ public class Controlador {
             arbolAutores.insertar(autor.trim(), r.getTitulo());
         }
         
-        // 3. Arbol Palabras Clave - Búsqueda y ordenamiento eficiente
+        // 3. Arbol Palabras Clave - Busqueda y ordenamiento eficiente
         for (String palabra : r.getPalabrasClaves()) {
             // Usamos toLowerCase() para estandarizar la busqueda
             arbolPalabrasClave.insertar(palabra.trim().toLowerCase(), r.getTitulo());
@@ -157,10 +157,10 @@ public class Controlador {
     }
     
     /**
-     * Busca un resumen completo dado su título exacto.
+     * Busca un resumen completo dado su titulo exacto.
      * 
      * 
-     * @param titulo Título exacto del resumen a buscar
+     * @param titulo Titulo exacto del resumen a buscar
      * @return Objeto Resumen encontrado o null si no existe
      */
     public Resumen buscarResumenPorTitulo(String titulo) {
@@ -181,13 +181,13 @@ public class Controlador {
 
     /**
      * Busca investigaciones por Palabra Clave.
-     * Realiza busqueda insensible a mayusculas mediante normalización.
+     * Realiza busqueda insensible a mayusculas mediante normalizacion.
      * 
      * @param palabra Palabra clave a buscar en los resumenes
      * @return Lista enlazada con los resumenes que contienen la palabra clave
      */
     public estructuras.ListaEnlazada<Resumen> buscarPorPalabraClave(String palabra) {
-        // Convertimos lo que escribió el usuario a minuscula antes de buscar en el árbol
+        // Convertimos lo que escribió el usuario a minuscula antes de buscar en el arbol
         String busqueda = palabra.trim().toLowerCase();
         
         ListaEnlazada<String> titulos = arbolPalabrasClave.obtenerTitulos(busqueda);
@@ -224,9 +224,9 @@ public class Controlador {
     }
     
     /**
-     * Obtiene todos los títulos guardados (útil para llenar listas en la GUI).
+     * Obtiene todos los titulos guardados (util para llenar listas en la GUI).
      * 
-     * @return Lista enlazada con todos los títulos de resúmenes almacenados
+     * @return Lista enlazada con todos los titulos de resúmenes almacenados
      */
     public ListaEnlazada<String> obtenerTodosLosTitulos() {
         return tablaResumenes.claves();
@@ -236,7 +236,7 @@ public class Controlador {
      * Obtiene la lista de todos los autores ordenados alfabeticamente.
      * Usa el recorrido InOrden del Árbol AVL para garantizar el orden.
      * 
-     * @return Lista enlazada con autores ordenados alfabéticamente
+     * @return Lista enlazada con autores ordenados alfabeticamente
      */
     public ListaEnlazada<String> obtenerAutoresRegistrados() {
         return arbolAutores.inorden();
@@ -246,7 +246,7 @@ public class Controlador {
      * Obtiene todas las palabras clave ordenadas alfabeticamente.
      * Utiliza el recorrido InOrden del Arbol AVL de palabras clave.
      * 
-     * @return Lista enlazada con palabras clave ordenadas alfabéticamente
+     * @return Lista enlazada con palabras clave ordenadas alfabeticamente
      */
     public ListaEnlazada<String> obtenerPalabrasClaveListadas() {
         return arbolPalabrasClave.inorden();
