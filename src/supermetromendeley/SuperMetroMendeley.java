@@ -7,7 +7,7 @@ package supermetromendeley;
 import Interfaz.MainFrame;
 
 /**
- * Clase principal (Main) que inicia la aplicación.
+ * Clase principal (Main) que inicia la aplicacion.
  * @author COMPUGAMER
  */
 public class SuperMetroMendeley {
